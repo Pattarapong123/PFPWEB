@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PFP Engineering | หน้าแรก</title>
+<link rel="icon" href="/images/logo2.jpg">
+
+<style>
+:root{
+  --bg:#0f172a; --panel:#0b1220; --card:#111827; --text:#e2e8f0;
+  --muted:#94a3b8; --line:#334155; --brand:#38bdf8; --brand2:#22d3ee;
+  --shadow:0 10px 30px rgba(2,6,23,.35); --nav-h:68px;
+}
+@media (max-width:900px){ :root{--nav-h:56px} }
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  padding-top:var(--nav-h);
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+
+/* ===== Carousel (16:9) ===== */
+.carousel{
+  position:relative;width:100%;aspect-ratio:16/9;
+  overflow:hidden;background:#000;border-bottom:1px solid var(--line);
+}
+.carousel img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  opacity:0;transition:opacity .6s ease;
+}
+.carousel img.active{opacity:1}
+.carousel .shade{
+  position:absolute;inset:0;
+  background:radial-gradient(1200px 420px at 50% -20%, rgba(56,189,248,.16), transparent),
+             linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.45));
+  pointer-events:none;
+}
+.carousel .ctrl{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.45);color:#fff;border:0;padding:10px 14px;
+  border-radius:999px;font-size:20px;cursor:pointer;z-index:5;
+}
+.carousel .ctrl:hover{background:rgba(0,0,0,.65)}
+.carousel .prev{left:16px} .carousel .next{right:16px}
+.carousel .dots{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:5;
+}
+.carousel .dots span{
+  width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.6);
+  cursor:pointer;transition:transform .15s,background .2s;
+}
+.carousel .dots span.active{background:#fff;transform:scale(1.1)}
+
+/* ===== Hero & Cards ===== */
+.hero{padding:48px 0;border-bottom:1px solid var(--line);
+  background:radial-gradient(1000px 300px at 50% -50%,rgba(56,189,248,.18),transparent)}
+.hero h1{font-size:clamp(24px,5vw,42px);margin:0 0 10px;font-weight:800}
+.muted{color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{padding:8px 12px;border:1px solid var(--line);border-radius:10px;transition:.2s}
+.btn:hover{background:#0b1220}
+.cta{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#0b1220;border:0}
+
+.grid-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+      padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.cover{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.badge{font-size:12px;opacity:.85}
+footer{padding:24px;text-align:center;border-top:1px solid var(--line);color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div id="appHeader"></div>
+
+<!-- รูปใช้ชื่อแบบพิมพ์เล็ก ไม่มีเว้นวรรค -->
+<section class="carousel" id="carousel">
+  <img src="/images/nlogo1.jpg" class="active" alt="slide1" onerror="this.src='/images/placeholder.png'">
+  <img src="/images/fiber.jpg" alt="slide2" onerror="this.src='/images/placeholder.png'">
+  <img src="/images/network1.jpg" alt="slide3" onerror="this.src='/images/placeholder.png'">
+  <img src="/images/access_control.jpg" alt="slide4" onerror="this.src='/images/placeholder.png'">
+  <img src="/images/test3.jpg" alt="slide5" onerror="this.src='/images/placeholder.png'">
+  <div class="shade"></div>
+  <button class="ctrl prev" aria-label="ก่อนหน้า">&#10094;</button>
+  <button class="ctrl next" aria-label="ถัดไป">&#10095;</button>
+  <div class="dots"></div>
+</section>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>โซลูชัน Network • Fiber • CCTV • Access Control</h1>
+    <p class="muted">หน้าแรก HTML ล้วน เชื่อมฐาน MySQL ผ่าน API ของคุณ</p>
+    <div class="toolbar">
+      <a class="btn cta" href="#portfolio">ดูผลงาน</a>
+      <a class="btn" href="/categories">ดู API (JSON)</a>
+      <span class="btn" id="status">กำลังเชื่อมต่อฐานข้อมูล…</span>
+    </div>
+  </div>
+</section>
+
+<main class="wrap" id="portfolio">
+  <div class="grid-head">
+    <h2 style="margin:0">Our Projects</h2>
+    <span class="muted" id="countText"></span>
+  </div>
+  <div class="cards" id="cardGrid"></div>
+</main>
+
+<div id="appFooter"></div>
+
+<!-- ✅ ย้าย JS ไปไฟล์ภายนอก ปลอดภัยกับ CSP/HostAtom -->
+<script defer src="/js/home.js"></script>
+</body>
+</html>

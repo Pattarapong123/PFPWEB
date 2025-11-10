@@ -1,0 +1,15 @@
+{
+  "server": {
+    "port": 3000,
+    "session_secret": "change_me_long_random_string",
+    "trust_proxy": true
+  },
+  "db": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "",
+    "database": "pfpserv_nodejs",
+    "connectionLimit": 10
+  }
+}
