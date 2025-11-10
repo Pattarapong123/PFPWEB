@@ -1,57 +1,45 @@
-
+// src/config.js
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
+// ระบุ path ของไฟล์ config สำหรับโหมด dev
 const rootDir = path.join(__dirname, '..');
 const cfgPath = path.join(rootDir, '..', 'config', 'app.config.json');
 
-let raw = '{}';
-try {
-  raw = fs.readFileSync(cfgPath, 'utf8');
-} catch (err) {
-  console.error(`[CONFIG] Not found: ${cfgPath}`);
-  throw new Error('Missing config/app.config.json — create it from app.config.sample.json');
-}
+let cfg = { server: {}, db: {} };
 
-let cfg;
-try {
-  cfg = JSON.parse(raw);
-} catch (err) {
-  console.error('[CONFIG] Invalid JSON in app.config.json');
-  throw err;
-}
-
-function must(obj, keys) {
-  let cur = obj;
-  for (const k of keys) {
-    if (cur?.[k] === undefined || cur?.[k] === null || cur?.[k] === '') {
-      throw new Error(`Missing config key: ${keys.join('.')}`);
-    }
-    cur = cur[k];
+// ----- โหลดจากไฟล์ (ถ้ามี) -----
+if (fs.existsSync(cfgPath)) {
+  try {
+    const raw = fs.readFileSync(cfgPath, 'utf8');
+    cfg = JSON.parse(raw);
+  } catch (err) {
+    console.error('[CONFIG] Invalid JSON in app.config.json');
+    throw err;
   }
+} else {
+  console.warn(`[CONFIG] Not found local file, using environment variables`);
 }
 
-must(cfg, ['server', 'session_secret']);
-must(cfg, ['db', 'host']);
-must(cfg, ['db', 'user']);
-must(cfg, ['db', 'database']);
-
-export const config = {
+// ----- รวมค่า ENV ถ้ามี -----
+const merged = {
   server: {
-    port: Number(cfg.server?.port ?? 3000),
-    session_secret: String(cfg.server.session_secret),
-    trust_proxy: Boolean(cfg.server?.trust_proxy ?? true),
+    port: Number(process.env.PORT || cfg.server?.port || 3000),
+    session_secret: process.env.SESSION_SECRET || cfg.server?.session_secret || 'changeme',
+    trust_proxy: process.env.TRUST_PROXY === 'true' || cfg.server?.trust_proxy || true,
   },
   db: {
-    host: String(cfg.db.host),
-    port: Number(cfg.db?.port ?? 3306),
-    user: String(cfg.db.user),
-    password: String(cfg.db?.password ?? ''),
-    database: String(cfg.db.database),
-    connectionLimit: Number(cfg.db?.connectionLimit ?? 10),
+    host: process.env.DB_HOST || cfg.db?.host || 'localhost',
+    port: Number(process.env.DB_PORT || cfg.db?.port || 3306),
+    user: process.env.DB_USER || cfg.db?.user || 'root',
+    password: process.env.DB_PASS || cfg.db?.password || '',
+    database: process.env.DB_NAME || cfg.db?.database || 'pfpserv_nodejs',
+    connectionLimit: Number(process.env.DB_CONNECTION_LIMIT || cfg.db?.connectionLimit || 10),
   }
 };
+
+export const config = merged;

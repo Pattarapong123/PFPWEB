@@ -9,7 +9,7 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": ">=18 <=22"
+    "node": ">=18 <=23"
   },
   "dependencies": {
     "compression": "^1.7.4",
